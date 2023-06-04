@@ -1,5 +1,6 @@
 import os
 
+import logging
 import cv2
 import gradio as gr
 import httpx
@@ -8,6 +9,7 @@ import numpy as np
 EXAMPLES_DIR = "assets/examples"
 API_SERVER_URL = os.environ.get("API_SERVER_URL", "http://localhost:8888")
 
+logger = logging.getLogger()
 
 async def create_image_embedding(image: np.ndarray):
     print(image.shape)
@@ -27,7 +29,7 @@ async def create_image_embedding(image: np.ndarray):
             resp = response.json()
 
     except Exception as e:
-        print(e)
+        logger.exception(e)
 
     # Decode
 

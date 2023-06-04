@@ -44,7 +44,7 @@ class SAMImageEncoder:
         # Preprocess
 
         # Inference
-        self.predictor.set_image()
+        # self.predictor.set_image()
 
         # Postprocess
 

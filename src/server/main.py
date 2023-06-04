@@ -22,9 +22,7 @@ configs = dict(
     model_type="default",
 )
 
-logger.info("Before")
 sam_image_encoder = SAMImageEncoder(**configs)
-logger.info("After")
 
 
 ###################
@@ -39,7 +37,14 @@ async def healthcheck() -> bool:
 
 @app.post("/image-embedding", response_model=SAMImageEmbeddingResponse)
 async def create_image_embedding(file: UploadFile):
-    out = sam_image_encoder.run(file)
+    """Create image embedding using SAM encoder API."""
+    logger.info("create_image_embedding.")
+    try:
+        out = await sam_image_encoder.run(file)
+
+    except Exception as e:
+        logger.exception(e)
+
     return SAMImageEmbeddingResponse(**out)
 
 
