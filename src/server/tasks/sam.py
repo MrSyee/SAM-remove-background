@@ -32,8 +32,7 @@ class SAMImageEncoder:
         checkpoint = os.path.join(checkpoint_path, checkpoint_name)
         if not os.path.exists(checkpoint):
             urllib.request.urlretrieve(checkpoint_url, checkpoint)
-        sam = sam_model_registry[model_type](checkpoint=checkpoint).to(device)
-        self.predictor = SamPredictor(sam)
+        self.model = sam_model_registry[model_type](checkpoint=checkpoint).to(device)
 
     @torch.no_grad()
     async def run(self, file: UploadFile) -> Dict[str, Any]:
@@ -44,8 +43,28 @@ class SAMImageEncoder:
         # Preprocess
 
         # Inference
-        # self.predictor.set_image()
+        result = self.model.image_encoder(image)
+        print(type(result), result.size())
 
         # Postprocess
 
         return {"image_embedding": "", "image_embedding_shape": [1, 256, 64, 64]}
+
+
+    def preprocess(self):
+        """Preprocess image to input to encoder."""
+        # Convert the bytes to numpy array
+
+        # Resize the image while maintaining the aspect ratio
+
+        # Normalize
+
+        # Padding
+
+        # Convert torch tensor
+        pass
+
+
+    def postprocess(self):
+        # Encode
+        pass
