@@ -1,7 +1,9 @@
+import base64
 import os
 import urllib
 from typing import Any, Dict, Tuple
 
+import cv2
 import numpy as np
 import torch
 from fastapi import UploadFile
@@ -26,13 +28,16 @@ class SAMImageEmbeddingResponse(BaseModel):
 class SAMImageEncoder:
     def __init__(self, checkpoint_path, checkpoint_name, checkpoint_url, model_type):
         logger.info("Initialize SAMImageEncoder.")
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         if not os.path.exists(checkpoint_path):
             os.makedirs(checkpoint_path, exist_ok=True)
         checkpoint = os.path.join(checkpoint_path, checkpoint_name)
         if not os.path.exists(checkpoint):
             urllib.request.urlretrieve(checkpoint_url, checkpoint)
-        self.model = sam_model_registry[model_type](checkpoint=checkpoint).to(device)
+        self.model = sam_model_registry[model_type](checkpoint=checkpoint).to(
+            self.device
+        )
 
     @torch.no_grad()
     async def run(self, file: UploadFile) -> Dict[str, Any]:
@@ -41,30 +46,68 @@ class SAMImageEncoder:
         image = await file.read()
 
         # Preprocess
+        input_image = self.preprocess(image)
 
         # Inference
-        result = self.model.image_encoder(image)
-        print(type(result), result.size())
+        # image embedding: torch.Tensor, [B, 256, 64, 64]
+        image_embedding = self.model.image_encoder(input_image)
+        # numpy.ndarray [B, 256, 64, 64]
+        image_embedding = image_embedding.cpu().detach().numpy()
 
         # Postprocess
+        outputs = self.postprocess(image_embedding)
 
-        return {"image_embedding": "", "image_embedding_shape": [1, 256, 64, 64]}
+        return outputs
 
+    def preprocess(self, image_byte) -> torch.Tensor:
+        """
+        Preprocess image to input to encoder.
 
-    def preprocess(self):
-        """Preprocess image to input to encoder."""
+        Return:
+            preprocessed: If longest size of target image is 1024,
+                        shape of tensor is [B, 3, 1024, 1024].
+                        And dtype of tensor is float32.
+        """
         # Convert the bytes to numpy array
+        image = np.frombuffer(image_byte, dtype=np.uint8)
+        image = cv2.imdecode(image, cv2.IMREAD_COLOR)[:, :, ::-1]  # RGB
 
         # Resize the image while maintaining the aspect ratio
+        origin_shape = image.shape[:2]
+        target_shape = self.__get_preprocess_shape(*origin_shape)
+        height, width = target_shape
+        image_fp = cv2.resize(image, dsize=(width, height)).astype(np.float32)
 
         # Normalize
+        image_fp -= np.array([123.675, 116.28, 103.53], dtype=np.float32)  # mean
+        image_fp /= np.array([58.395, 57.12, 57.375], dtype=np.float32)  # std
 
         # Padding
+        preprocessed = np.zeros((1024, 1024, 3), dtype=np.float32)
+        preprocessed[:height, :width, :] = image_fp
 
         # Convert torch tensor
-        pass
+        preprocessed = np.moveaxis(preprocessed, -1, 0)[None, :, :, :]
+        preprocessed = torch.tensor(preprocessed).to(self.device)
 
+        return preprocessed
 
-    def postprocess(self):
-        # Encode
-        pass
+    def postprocess(self, image_embedding: torch.Tensor) -> Dict[str, Any]:
+        """Postprocess the inference results for exporting as API response."""
+        image_embedding_shape = image_embedding.shape
+        image_embedding = base64.b64encode(image_embedding.tobytes()).decode("utf8")
+        return {
+            "image_embedding": image_embedding,
+            "image_embedding_shape": image_embedding_shape,
+        }
+
+    @staticmethod
+    def __get_preprocess_shape(
+        oldh: int, oldw: int, long_side_length: int = 1024
+    ) -> Tuple[int, int]:
+        """Compute the output size given input size and target long side length."""
+        scale = long_side_length * 1.0 / max(oldh, oldw)
+        newh, neww = oldh * scale, oldw * scale
+        neww = int(neww + 0.5)
+        newh = int(newh + 0.5)
+        return (newh, neww)

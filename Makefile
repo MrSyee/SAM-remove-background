@@ -19,7 +19,7 @@ server:
 	PYTHONPATH=src/server uvicorn src.server.main:app --host 0.0.0.0 --port 8888
 
 server-debug:
-	PYTHONPATH=src/server uvicorn src.server.main:app --host 0.0.0.0 --port 8888 --reload
+	PYTHONPATH=src/server uvicorn src.server.main:app --host 0.0.0.0 --port 8888 --reload --reload-exclude "src/client/*"
 
 # Docker
 
