@@ -1,6 +1,6 @@
-import multiprocessing
 import base64
 import logging
+import multiprocessing
 import os
 
 import cv2
@@ -75,11 +75,11 @@ async def get_image_embedding(image: np.ndarray):
 
 
 def extract_object(
-        origin_image: np.ndarray,
-        embedding_file: str,
-        point_w: int,
-        point_h: int,
-    ):
+    origin_image: np.ndarray,
+    embedding_file: str,
+    point_w: int,
+    point_h: int,
+):
     print("[INFO] Extract object and remove background to infernece model.")
     # Load embedding
     image_embedding = np.load(embedding_file.name)
@@ -118,9 +118,11 @@ def extract_object(
 
     return result_image
 
+
 def extract_object_by_event(image: np.ndarray, embedding_file: str, evt: gr.SelectData):
     click_h, click_w = evt.index
     return extract_object(image, embedding_file, click_h, click_w)
+
 
 def get_coords(evt: gr.SelectData):
     return evt.index[0], evt.index[1]
@@ -169,7 +171,9 @@ with gr.Blocks() as app:
     )
 
     # Extract object and remove background when click object
-    input_img.select(extract_object_by_event, [input_img, image_embedding_file], output_img)
+    input_img.select(
+        extract_object_by_event, [input_img, image_embedding_file], output_img
+    )
     input_img.select(get_coords, None, [coord_x, coord_y])
 
     gr.Markdown("## Image Examples")

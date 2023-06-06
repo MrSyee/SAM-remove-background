@@ -1,5 +1,6 @@
 from typing import Tuple
 
+
 def get_preprocess_shape(
     oldh: int, oldw: int, long_side_length: int
 ) -> Tuple[int, int]:

@@ -19,6 +19,7 @@ logger = get_logger()
 # Model
 class SAMImageEmbeddingResponse(BaseModel):
     """SAM Image embedding Response model."""
+
     image_embedding: str = Field(..., description="Image Embedding")
     image_embedding_shape: EmbeddingShape = Field(..., example=[1, 256, 64, 64])
 

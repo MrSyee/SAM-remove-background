@@ -5,10 +5,28 @@ The Encoder part of SAM is served to the triton inference server to increase the
 All parts of the app were configured for deployment on docker and k8s.
 
 # Contents
-- Implement remove background app using SAM with Gradio
+- [Done] Implement remove background app using SAM with Gradio
 - Convert pre-trained SAM Encoder to torchscript
 - Triton serving SAM Encoder
 - Load test on Triton server (Locust)
 - Docker compose for the server and client.
 - Kubernetes helm charts for the server and client.
 - Monitoring on K8s (Promtail + Loki & Prometheus & Grafana).
+
+# Run
+1. In local
+```bash
+make env
+conda activate sam-remove-background
+make setup
+```
+
+Run API Server for SAM encoder.
+```bash
+make server
+```
+
+Run Gradio UI.
+```bash
+make client
+```
