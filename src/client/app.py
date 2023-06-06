@@ -20,9 +20,9 @@ API_SERVER_URL = os.environ.get("API_SERVER_URL", "http://localhost:8888")
 ###################
 # Events
 ###################
-async def create_image_embedding(image: np.ndarray):
+async def get_image_embedding(image: np.ndarray):
     """"""
-    print(image.shape)
+    print("[INFO] Get image embedding.")
     # Encode image to byte
     image_bytes = cv2.imencode(".jpg", image)[1].tobytes()
 
@@ -53,9 +53,23 @@ async def create_image_embedding(image: np.ndarray):
     return filepath
 
 
-def extract_object(image: np.ndarray, point_h: int, point_w: int, point_label: int):
-    pass
+def extract_object(
+        image: np.ndarray,
+        embedding_file: str,
+        point_h: int,
+        point_w: int,
+    ):
+    print("extract_object")
+    # Load embedding
 
+    # Get mask
+
+    # Remove background
+
+
+def extract_object_by_event(image: np.ndarray, embedding_file: str, evt: gr.SelectData):
+    click_h, click_w = evt.index
+    return extract_object(image, embedding_file, click_h, click_w)
 
 def get_coords(evt: gr.SelectData):
     return evt.index[0], evt.index[1]
@@ -98,19 +112,27 @@ with gr.Blocks() as app:
 
     # Create image embedding when upload input image
     embed_btn.click(
-        create_image_embedding,
+        get_image_embedding,
         inputs=input_img,
         outputs=image_embedding_file,
     )
 
     # Extract object and remove background when click object
+    input_img.select(extract_object_by_event, [input_img, image_embedding_file], output_img)
     input_img.select(get_coords, None, [coord_h, coord_w])
 
     gr.Markdown("## Image Examples")
     gr.Examples(
-        examples=[[os.path.join(EXAMPLES_DIR, "mannequin.jpeg")]],
-        inputs=[input_img],
-        fn=create_image_embedding,
+        examples=[
+            [
+                os.path.join(EXAMPLES_DIR, "mannequin.jpeg"),
+                os.path.join(EXAMPLES_DIR, "embedding.npy"),
+                230,
+                1720
+            ]
+        ],
+        inputs=[input_img, image_embedding_file, coord_h, coord_w],
+        fn=extract_object,
         run_on_click=True,
     )
 
