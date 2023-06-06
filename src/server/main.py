@@ -36,7 +36,7 @@ async def healthcheck() -> bool:
 
 
 @app.post("/image-embedding", response_model=SAMImageEmbeddingResponse)
-async def create_image_embedding(file: UploadFile):
+async def create_image_embedding(file: UploadFile) -> SAMImageEmbeddingResponse:
     """Create image embedding using SAM encoder API."""
     logger.info("create_image_embedding.")
     try:

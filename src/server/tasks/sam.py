@@ -26,7 +26,9 @@ class SAMImageEmbeddingResponse(BaseModel):
 
 # Controller
 class SAMImageEncoder:
-    def __init__(self, checkpoint_path, checkpoint_name, checkpoint_url, model_type):
+    def __init__(
+            self, checkpoint_path, checkpoint_name, checkpoint_url, model_type
+        ) -> None:
         logger.info("Initialize SAMImageEncoder.")
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -99,14 +101,3 @@ class SAMImageEncoder:
             "image_embedding": image_embedding,
             "image_embedding_shape": image_embedding_shape,
         }
-
-    @staticmethod
-    def __get_preprocess_shape(
-        oldh: int, oldw: int, long_side_length: int = 1024
-    ) -> Tuple[int, int]:
-        """Compute the output size given input size and target long side length."""
-        scale = long_side_length * 1.0 / max(oldh, oldw)
-        newh, neww = oldh * scale, oldw * scale
-        neww = int(neww + 0.5)
-        newh = int(newh + 0.5)
-        return (newh, neww)

@@ -2,6 +2,7 @@ import base64
 import logging
 import multiprocessing
 import os
+from typing import Tuple
 
 import cv2
 import gradio as gr
@@ -34,8 +35,8 @@ ort_sess = ort.InferenceSession("checkpoint/sam_onnx_quantized.onnx", sess_optio
 ###################
 # Events
 ###################
-async def get_image_embedding(image: np.ndarray):
-    """"""
+async def get_image_embedding(image: np.ndarray) -> str:
+    """Get image embedding using API."""
     print("[INFO] Get image embedding.")
     # Resize the image while maintaining the aspect ratio
     origin_shape = image.shape[:2]
@@ -75,18 +76,19 @@ async def get_image_embedding(image: np.ndarray):
 
 
 def extract_object(
-    origin_image: np.ndarray,
+    image: np.ndarray,
     embedding_file: str,
     point_w: int,
     point_h: int,
-):
+) -> np.ndarray:
+    """Extract object and remove background to inference model."""
     print("[INFO] Extract object and remove background to infernece model.")
     # Load embedding
     image_embedding = np.load(embedding_file.name)
     image_embedding = image_embedding.reshape(1, 256, 64, 64)
 
     # Resize the image to prevent too large image
-    image_shape = origin_image.shape[:-1]
+    image_shape = image.shape[:-1]
 
     # Corrects the coordinates for the resize
     old_h, old_w = image_shape
@@ -114,17 +116,21 @@ def extract_object(
     mask = (mask > 0).astype(np.uint8)
 
     # Remove background
-    result_image = cv2.bitwise_and(origin_image, origin_image, mask=mask)
+    result_image = cv2.bitwise_and(image, image, mask=mask)
 
     return result_image
 
 
-def extract_object_by_event(image: np.ndarray, embedding_file: str, evt: gr.SelectData):
+def extract_object_by_event(
+    image: np.ndarray, embedding_file: str, evt: gr.SelectData
+) -> np.ndarray:
+    """Extract object by click event."""
     click_h, click_w = evt.index
     return extract_object(image, embedding_file, click_h, click_w)
 
 
-def get_coords(evt: gr.SelectData):
+def get_coords(evt: gr.SelectData) -> Tuple[int, int]:
+    """Get coords by click event."""
     return evt.index[0], evt.index[1]
 
 
