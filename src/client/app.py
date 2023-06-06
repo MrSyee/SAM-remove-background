@@ -46,7 +46,7 @@ async def create_image_embedding(image: np.ndarray):
     image_embedding = np.frombuffer(image_embedding, dtype=np.float32)
 
     # Save embedding by numpy format
-    os.makedirs("assets", exists_ok=True)
+    os.makedirs("assets", exist_ok=True)
     filepath = "assets/embedding.npy"
     np.save(filepath, image_embedding)
 
