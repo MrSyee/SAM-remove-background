@@ -9,6 +9,12 @@ env:
 setup:
 	pip install -r requirements.txt
 
+decoder-model:
+	git lfs install
+	git clone https://huggingface.co/khsyee/sam-vit-h-decoder-onnx-quantized
+	mv sam-vit-h-decoder-onnx-quantized/sam_onnx_quantized.onnx checkpoint/sam_onnx_quantized.onnx
+	rm -rf sam-vit-h-decoder-onnx-quantized
+
 
 # Run
 client:

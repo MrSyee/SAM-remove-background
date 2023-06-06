@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from fastapi import UploadFile
 from pydantic import BaseModel, Field
-from segment_anything import SamPredictor, sam_model_registry
+from segment_anything import sam_model_registry
 
 from utils.logger import get_logger
 
@@ -72,11 +72,9 @@ class SAMImageEncoder:
         image = np.frombuffer(image_byte, dtype=np.uint8)
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)[:, :, ::-1]  # RGB
 
-        # Resize the image while maintaining the aspect ratio
-        origin_shape = image.shape[:2]
-        target_shape = self.__get_preprocess_shape(*origin_shape, target_size)
-        height, width = target_shape
-        image_fp = cv2.resize(image, dsize=(width, height)).astype(np.float32)
+        # Get image shape and convert type
+        height, width = image.shape[:2]
+        image_fp = image.astype(np.float32)
 
         # Normalize
         image_fp -= np.array([123.675, 116.28, 103.53], dtype=np.float32)  # mean
