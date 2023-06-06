@@ -19,7 +19,6 @@ logger = get_logger()
 # Model
 class SAMImageEmbeddingResponse(BaseModel):
     """SAM Image embedding Response model."""
-
     image_embedding: str = Field(..., description="Image Embedding")
     image_embedding_shape: EmbeddingShape = Field(..., example=[1, 256, 64, 64])
 
@@ -38,6 +37,7 @@ class SAMImageEncoder:
         self.model = sam_model_registry[model_type](checkpoint=checkpoint).to(
             self.device
         )
+        logger.info("Complete to initialize SAMImageEncoder.")
 
     @torch.no_grad()
     async def run(self, file: UploadFile) -> Dict[str, Any]:
@@ -59,7 +59,7 @@ class SAMImageEncoder:
 
         return outputs
 
-    def preprocess(self, image_byte) -> torch.Tensor:
+    def preprocess(self, image_byte, target_size=1024) -> torch.Tensor:
         """
         Preprocess image to input to encoder.
 
@@ -74,7 +74,7 @@ class SAMImageEncoder:
 
         # Resize the image while maintaining the aspect ratio
         origin_shape = image.shape[:2]
-        target_shape = self.__get_preprocess_shape(*origin_shape)
+        target_shape = self.__get_preprocess_shape(*origin_shape, target_size)
         height, width = target_shape
         image_fp = cv2.resize(image, dsize=(width, height)).astype(np.float32)
 
@@ -83,7 +83,7 @@ class SAMImageEncoder:
         image_fp /= np.array([58.395, 57.12, 57.375], dtype=np.float32)  # std
 
         # Padding
-        preprocessed = np.zeros((1024, 1024, 3), dtype=np.float32)
+        preprocessed = np.zeros((target_size, target_size, 3), dtype=np.float32)
         preprocessed[:height, :width, :] = image_fp
 
         # Convert torch tensor
