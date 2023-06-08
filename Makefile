@@ -21,7 +21,6 @@ client:
 	python src/client/app.py
 
 server:
-
 	PYTHONPATH=src/server uvicorn src.server.main:app --host 0.0.0.0 --port 8888
 
 server-debug:
