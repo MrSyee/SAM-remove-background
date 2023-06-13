@@ -1,0 +1,5 @@
+gradio                    == 3.32.0
+
+opencv-python             == 4.7.0.72
+onnxruntime               == 1.14.1
+httpx                     == 0.24.1

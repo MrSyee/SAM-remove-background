@@ -27,6 +27,18 @@ server-debug:
 	PYTHONPATH=src/server uvicorn src.server.main:app --host 0.0.0.0 --port 8888 --reload --reload-exclude "src/client/*"
 
 # Docker
+# Client
+docker-build-client:
+	docker build -t ${CONTAINER_NAME}-client -f Dockerfiles/client.Dockerfile .
+
+docker-push-client:
+	docker push ${CONTAINER_NAME}-client
+
+docker-pull-client:
+	docker pull ${CONTAINER_NAME}-client
+
+# Server
+
 
 # Dev
 setup-dev:

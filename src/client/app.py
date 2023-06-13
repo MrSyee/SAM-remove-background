@@ -20,6 +20,7 @@ logger = logging.getLogger()
 
 EXAMPLES_DIR = "assets/examples"
 API_SERVER_URL = os.environ.get("API_SERVER_URL", "http://localhost:8888")
+CHECKPOINT_PATH = os.environ.get("CHECKPOINT_PATH", "checkpoint/sam_onnx_quantized.onnx")
 
 IMAGE_SIZE_FOR_EMBEDDING = 1024
 POINTS_LABELS = np.array([[1, -1]], dtype=np.float32)
@@ -30,7 +31,7 @@ HAS_MASK_INPUT = np.zeros(1, dtype=np.float32)
 sess_options = ort.SessionOptions()
 sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
 sess_options.intra_op_num_threads = min(8, multiprocessing.cpu_count() // 2)
-ort_sess = ort.InferenceSession("checkpoint/sam_onnx_quantized.onnx", sess_options)
+ort_sess = ort.InferenceSession(CHECKPOINT_PATH, sess_options)
 
 ###################
 # Events
@@ -203,4 +204,4 @@ with gr.Blocks() as app:
     )
 
 if __name__ == "__main__":
-    app.launch()
+    app.launch(server_name="0.0.0.0")
