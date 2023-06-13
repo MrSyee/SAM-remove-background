@@ -38,7 +38,8 @@ docker-pull-client:
 	docker pull ${CONTAINER_NAME}-client
 
 # Server
-
+docker-build-server:
+	docker build -t ${CONTAINER_NAME}-server -f Dockerfiles/server.Dockerfile .
 
 # Dev
 setup-dev:

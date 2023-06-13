@@ -6,8 +6,7 @@ WORKDIR /app
 COPY src/client/requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-COPY src/client/app.py .
-COPY src/client/utils.py .
+COPY src/client .
 
 COPY checkpoint/sam_onnx_quantized.onnx checkpoint/
 ENV CHECKPOINT_PATH "checkpoint/sam_onnx_quantized.onnx"

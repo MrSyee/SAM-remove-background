@@ -45,7 +45,6 @@ class SAMImageEncoder:
     @torch.no_grad()
     async def run(self, file: UploadFile) -> Dict[str, Any]:
         logger.info("Run SAMImageEncoder.")
-
         image = await file.read()
 
         # Preprocess
@@ -76,6 +75,10 @@ class SAMImageEncoder:
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)[:, :, ::-1]  # RGB
 
         # Get image shape and convert type
+        if image.shape != (1024, 1024, 3):
+            raise Exception(
+                f"Image shape is wrong. Shape should be (1024, 1024, 3), but it's {image.shape}"
+            )
         height, width = image.shape[:2]
         image_fp = image.astype(np.float32)
 

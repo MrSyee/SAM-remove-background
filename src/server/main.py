@@ -2,7 +2,7 @@ import os
 
 import cv2
 import uvicorn
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, HTTPException
 
 from tasks.sam import SAMImageEmbeddingResponse, SAMImageEncoder
 from utils.logger import get_logger
@@ -23,6 +23,7 @@ configs = dict(
 )
 
 sam_image_encoder = SAMImageEncoder(**configs)
+logger.info("API Server is ready.")
 
 
 ###################
@@ -31,14 +32,12 @@ sam_image_encoder = SAMImageEncoder(**configs)
 @app.get("/healthcheck")
 async def healthcheck() -> bool:
     """Healthcheck."""
-    logger.info("Health Check.")
     return True
 
 
 @app.post("/image-embedding", response_model=SAMImageEmbeddingResponse)
 async def create_image_embedding(file: UploadFile) -> SAMImageEmbeddingResponse:
     """Create image embedding using SAM encoder API."""
-    logger.info("create_image_embedding.")
     try:
         out = await sam_image_encoder.run(file)
 
