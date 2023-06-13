@@ -18,7 +18,7 @@ from utils import get_preprocess_shape
 cv2.setNumThreads(1)
 logger = logging.getLogger()
 
-EXAMPLES_DIR = "assets/examples"
+EXAMPLES_DIR = os.environ.get("EXAMPLE_DIR", "assets/examples")
 API_SERVER_URL = os.environ.get("API_SERVER_URL", "http://localhost:8888")
 CHECKPOINT_PATH = os.environ.get("CHECKPOINT_PATH", "checkpoint/sam_onnx_quantized.onnx")
 

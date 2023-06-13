@@ -8,8 +8,13 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY src/client/app.py .
 COPY src/client/utils.py .
+
 COPY checkpoint/sam_onnx_quantized.onnx checkpoint/
+ENV CHECKPOINT_PATH "checkpoint/sam_onnx_quantized.onnx"
+
 COPY assets assets/
+ENV EXAMPLE_DIR "assets/examples"
+
 
 EXPOSE 7860
 

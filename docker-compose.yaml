@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  sam-client:
+    image: ghcr.io/mrsyee/sam-remove-background-client:latest
+    container_name: sam-remove-background-client
+    ports:
+      - 7860:7860
+    # stdin_open: true
+    # tty: true
+    # restart: 'no'
