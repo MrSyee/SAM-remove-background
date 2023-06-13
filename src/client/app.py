@@ -82,7 +82,6 @@ def extract_object(
     point_h: int,
 ) -> np.ndarray:
     """Extract object and remove background to inference model."""
-    print("[INFO] Extract object and remove background to infernece model.")
     # Load embedding
     image_embedding = np.load(embedding_file.name)
     image_embedding = image_embedding.reshape(1, 256, 64, 64)
@@ -117,6 +116,11 @@ def extract_object(
 
     # Remove background
     result_image = cv2.bitwise_and(image, image, mask=mask)
+
+    # Convert to rgba channel
+    bgr_channel = result_image[..., :3]  # BGR 채널 분리
+    alpha_channel = np.where(bgr_channel[..., 0] == 0, 0, 255).astype(np.uint8)  # 투명도 채널 생성
+    result_image = np.dstack((bgr_channel, alpha_channel))  # BGRA 이미지 생성
 
     return result_image
 
