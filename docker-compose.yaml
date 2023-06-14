@@ -8,3 +8,18 @@ services:
     # stdin_open: true
     # tty: true
     # restart: 'no'
+    networks:
+      - sam-network
+
+  sam-server:
+    image: ghcr.io/mrsyee/sam-remove-background-server:latest
+    container_name: sam-remove-background-server
+    volumes:
+      - ./checkpoint:/app/checkpoint
+    ports:
+      - 8888:8888
+    networks:
+      - sam-network
+
+networks:
+  sam-network:
