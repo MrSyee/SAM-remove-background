@@ -14,11 +14,12 @@ All parts of the app were configured for deployment on docker and k8s.
 - Monitoring on K8s (Promtail + Loki & Prometheus & Grafana).
 
 # Run
-1. In local
+1. In local with conda
 ```bash
 make env
 conda activate sam-remove-background
 make setup
+make decoder-model
 ```
 
 Run API Server for SAM encoder.

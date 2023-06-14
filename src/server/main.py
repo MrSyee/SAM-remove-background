@@ -2,7 +2,7 @@ import os
 
 import cv2
 import uvicorn
-from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi import FastAPI, UploadFile
 
 from tasks.sam import SAMImageEmbeddingResponse, SAMImageEncoder
 from utils.logger import get_logger

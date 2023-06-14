@@ -3,8 +3,13 @@ services:
   sam-client:
     image: ghcr.io/mrsyee/sam-remove-background-client:latest
     container_name: sam-remove-background-client
+    build:
+      context: .
+      dockerfile: Dockerfiles/client.Dockerfile
     ports:
       - 7860:7860
+    environment:
+      - API_SERVER_URL=http://sam-server:8888
     # stdin_open: true
     # tty: true
     # restart: 'no'
@@ -14,10 +19,20 @@ services:
   sam-server:
     image: ghcr.io/mrsyee/sam-remove-background-server:latest
     container_name: sam-remove-background-server
+    build:
+      context: .
+      dockerfile: Dockerfiles/server.Dockerfile
     volumes:
       - ./checkpoint:/app/checkpoint
     ports:
       - 8888:8888
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
     networks:
       - sam-network
 

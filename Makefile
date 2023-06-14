@@ -12,7 +12,8 @@ setup:
 decoder-model:
 	git lfs install
 	git clone https://huggingface.co/khsyee/sam-vit-h-decoder-onnx-quantized
-	mv sam-vit-h-decoder-onnx-quantized/sam_onnx_quantized.onnx checkpoint/sam_onnx_quantized.onnx
+	mkdir -p checkpoint
+	mv sam-vit-h-decoder-onnx-quantized/sam_onnx_quantized.onnx checkpoint/
 	rm -rf sam-vit-h-decoder-onnx-quantized
 
 

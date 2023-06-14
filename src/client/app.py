@@ -20,7 +20,9 @@ logger = logging.getLogger()
 
 EXAMPLES_DIR = os.environ.get("EXAMPLE_DIR", "assets/examples")
 API_SERVER_URL = os.environ.get("API_SERVER_URL", "http://localhost:8888")
-CHECKPOINT_PATH = os.environ.get("CHECKPOINT_PATH", "checkpoint/sam_onnx_quantized.onnx")
+CHECKPOINT_PATH = os.environ.get(
+    "CHECKPOINT_PATH", "checkpoint/sam_onnx_quantized.onnx"
+)
 
 IMAGE_SIZE_FOR_EMBEDDING = 1024
 POINTS_LABELS = np.array([[1, -1]], dtype=np.float32)
@@ -41,8 +43,7 @@ async def get_image_embedding(image: np.ndarray) -> str:
     print("[INFO] Get image embedding.")
     # Resize the image while maintaining the aspect ratio
     origin_shape = image.shape[:2]
-    target_shape = get_preprocess_shape(*origin_shape, IMAGE_SIZE_FOR_EMBEDDING)
-    height, width = target_shape
+    height, width = get_preprocess_shape(*origin_shape, IMAGE_SIZE_FOR_EMBEDDING)
     image = cv2.resize(image, dsize=(width, height))
 
     # Encode image to byte
@@ -120,7 +121,9 @@ def extract_object(
 
     # Convert to rgba channel
     bgr_channel = result_image[..., :3]  # BGR 채널 분리
-    alpha_channel = np.where(bgr_channel[..., 0] == 0, 0, 255).astype(np.uint8)  # 투명도 채널 생성
+    alpha_channel = np.where(bgr_channel[..., 0] == 0, 0, 255).astype(
+        np.uint8
+    )  # 투명도 채널 생성
     result_image = np.dstack((bgr_channel, alpha_channel))  # BGRA 이미지 생성
 
     return result_image
