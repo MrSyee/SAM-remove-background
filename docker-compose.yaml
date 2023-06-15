@@ -10,9 +10,6 @@ services:
       - 7860:7860
     environment:
       - API_SERVER_URL=http://sam-server:8888
-    # stdin_open: true
-    # tty: true
-    # restart: 'no'
     networks:
       - sam-network
 
@@ -26,13 +23,8 @@ services:
       - ./checkpoint:/app/checkpoint
     ports:
       - 8888:8888
-    deploy:
-      resources:
-        reservations:
-          devices:
-          - driver: nvidia
-            device_ids: ['1']
-            capabilities: [gpu]
+    environment:
+      - INFERENCE_SERVER_URL=triton:8001
     networks:
       - sam-network
 

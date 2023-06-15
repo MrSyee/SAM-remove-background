@@ -1,6 +1,7 @@
 import os
 
 import cv2
+import tritonclient.grpc.aio as grpcclient
 import uvicorn
 from fastapi import FastAPI, UploadFile
 
@@ -15,14 +16,11 @@ logger = get_logger()
 
 app = FastAPI()
 
-configs = dict(
-    checkpoint_path=os.path.join("checkpoint"),
-    checkpoint_name="sam_vit_h_4b8939.pth",
-    checkpoint_url="https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth",
-    model_type="default",
-)
-
-sam_image_encoder = SAMImageEncoder(**configs)
+# INFERENCE_SERVER_URL (str)
+inference_server_url = os.getenv("INFERENCE_SERVER_URL", "localhost:8001")
+# Create an inference server client.
+triton_client = grpcclient.InferenceServerClient(inference_server_url)
+sam_image_encoder = SAMImageEncoder(triton_client)
 logger.info("API Server is ready.")
 
 
@@ -39,7 +37,11 @@ async def healthcheck() -> bool:
 async def create_image_embedding(file: UploadFile) -> SAMImageEmbeddingResponse:
     """Create image embedding using SAM encoder API."""
     try:
-        out = await sam_image_encoder.run(file)
+        inference_params = {
+            "model_name": "sam_torchscript_fp32",
+            "model_version": "",
+        }
+        out = await sam_image_encoder.run(file, inference_params)
 
     except Exception as e:
         logger.exception(e)

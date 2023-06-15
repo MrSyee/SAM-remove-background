@@ -8,3 +8,4 @@ pycocotools               == 2.0.6
 fastapi                   == 0.95.1
 uvicorn[standard]         == 0.22.0
 python-multipart          == 0.0.6
+tritonclient[grpc]        == 2.33.0

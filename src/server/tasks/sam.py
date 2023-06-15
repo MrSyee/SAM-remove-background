@@ -6,6 +6,7 @@ from typing import Any, Dict, Tuple
 import cv2
 import numpy as np
 import torch
+import tritonclient.grpc.aio as grpcclient
 from fastapi import UploadFile
 from pydantic import BaseModel, Field
 from segment_anything import sam_model_registry
@@ -15,6 +16,7 @@ from utils.logger import get_logger
 EmbeddingShape = Tuple[int, int, int, int]
 
 logger = get_logger()
+
 
 # Model
 class SAMImageEmbeddingResponse(BaseModel):
@@ -26,35 +28,33 @@ class SAMImageEmbeddingResponse(BaseModel):
 
 # Controller
 class SAMImageEncoder:
-    def __init__(
-        self, checkpoint_path, checkpoint_name, checkpoint_url, model_type
-    ) -> None:
+    def __init__(self, triton_client: grpcclient.InferenceServerClient) -> None:
         logger.info("Initialize SAMImageEncoder.")
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-        if not os.path.exists(checkpoint_path):
-            os.makedirs(checkpoint_path, exist_ok=True)
-        checkpoint = os.path.join(checkpoint_path, checkpoint_name)
-        if not os.path.exists(checkpoint):
-            urllib.request.urlretrieve(checkpoint_url, checkpoint)
-        self.model = sam_model_registry[model_type](checkpoint=checkpoint).to(
-            self.device
-        )
-        logger.info("Complete to initialize SAMImageEncoder.")
+        self.triton_client = triton_client
 
     @torch.no_grad()
-    async def run(self, file: UploadFile) -> Dict[str, Any]:
+    async def run(
+        self, file: UploadFile, inference_params: Dict[str, Any]
+    ) -> Dict[str, Any]:
         logger.info("Run SAMImageEncoder.")
         image = await file.read()
 
         # Preprocess
         input_image = self.preprocess(image)
 
-        # Inference
-        # image embedding: torch.Tensor, [B, 256, 64, 64]
-        image_embedding = self.model.image_encoder(input_image)
-        # numpy.ndarray [B, 256, 64, 64]
-        image_embedding = image_embedding.cpu().detach().numpy()
+        # Prepare for inference.
+        triton_inputs = [grpcclient.InferInput("INPUT__0", input_image.shape, "FP32")]
+        triton_inputs[0].set_data_from_numpy(input_image)
+        triton_outputs = [grpcclient.InferRequestedOutput("OUTPUT__0")]
+
+        # Run the inference.
+        result = await self.triton_client.infer(
+            inputs=triton_inputs,
+            outputs=triton_outputs,
+            **inference_params,
+        )
+        # image embedding: numpy.ndarray [B, 256, 64, 64]
+        image_embedding = result.as_numpy("OUTPUT__0")
 
         # Postprocess
         outputs = self.postprocess(image_embedding)
@@ -92,7 +92,6 @@ class SAMImageEncoder:
 
         # Convert torch tensor
         preprocessed = np.moveaxis(preprocessed, -1, 0)[None, :, :, :]
-        preprocessed = torch.tensor(preprocessed).to(self.device)
 
         return preprocessed
 
