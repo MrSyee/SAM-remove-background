@@ -6,3 +6,4 @@ __pycache__
 checkpoint
 logs
 outputs
+model_repository

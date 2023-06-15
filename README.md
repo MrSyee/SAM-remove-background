@@ -9,7 +9,7 @@ All parts of the app were configured for deployment on docker and k8s.
 - Convert pre-trained SAM Encoder to torchscript.
 - Triton serving SAM Encoder.
 - Load test on Triton server (Locust).
-- Docker compose for the server and client.
+- [Done] Docker compose for the server and client.
 - Kubernetes helm charts for the server and client.
 - Monitoring on K8s (Promtail + Loki & Prometheus & Grafana).
 

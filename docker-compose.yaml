@@ -31,6 +31,19 @@ services:
         reservations:
           devices:
           - driver: nvidia
+            device_ids: ['1']
+            capabilities: [gpu]
+    networks:
+      - sam-network
+
+  triton:
+    image: nvcr.io/nvidia/tritonserver:23.04-py3
+    container_name: sam_triton
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
             device_ids: ['0']
             capabilities: [gpu]
     networks:
