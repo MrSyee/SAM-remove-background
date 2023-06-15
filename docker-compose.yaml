@@ -39,6 +39,9 @@ services:
   triton:
     image: nvcr.io/nvidia/tritonserver:23.04-py3
     container_name: sam_triton
+    command: tritonserver --model-repository=/models
+    volumes:
+      - ./model_repository:/models
     deploy:
       resources:
         reservations:
