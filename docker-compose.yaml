@@ -28,12 +28,15 @@ services:
     networks:
       - sam-network
 
-  triton:
+  triton-server:
     image: nvcr.io/nvidia/tritonserver:23.04-py3
-    container_name: sam_triton
+    container_name: sam-triton
     command: tritonserver --model-repository=/models
     volumes:
       - ./model_repository:/models
+    ports:
+      - 8000:8000
+      - 8001:8001
     deploy:
       resources:
         reservations:
