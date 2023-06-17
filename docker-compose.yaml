@@ -24,7 +24,7 @@ services:
     ports:
       - 8888:8888
     environment:
-      - INFERENCE_SERVER_URL=triton:8001
+      - INFERENCE_SERVER_URL=triton-server:8001
     networks:
       - sam-network
 

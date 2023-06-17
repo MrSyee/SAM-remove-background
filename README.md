@@ -16,15 +16,23 @@ All parts of the app were configured for deployment on docker and k8s.
 - Kubernetes helm charts for the server and client.
 - Monitoring on K8s (Promtail + Loki & Prometheus & Grafana).
 
-## Diagram
-[]
+## Application Structure
+![app-structure](https://github.com/MrSyee/SAM-remove-background/assets/17582508/92136d9a-7495-47ad-874f-10154423757d)
+SAM has three components: **an image encoder**, **a flexible prompt encoder**, and **a fast mask decoder**. The image embedding obtained by the image encoder, which is a large model, can be reused in the image decoder.
+
+The structure of the application reflects the structure of SAM. The **image encoder** works on the **server part**. It uses GPU resources to make inferences. The image encoder is only performed when a new image is uploaded.
+The relatively lightweight **mask decoder** and **prompt encoder** work on the **client part**. They take the image embedding obtained by the image encoder as input.
 
 ## Run
 ### 1. In local with conda
+Initialize conda environment.
 ```bash
 make env
 conda activate sam-remove-background
 make setup
+```
+Download models.
+```bash
 make model
 ```
 
@@ -40,8 +48,13 @@ make client
 Browse localhost:7860.
 
 ### 2. Docker compose
+Download models.
 ```bash
 make model
+```
+
+Run services with docker-compose.
+```bash
 docker compose up -d
 ```
 Browse localhost:7860.
