@@ -1,4 +1,4 @@
-# SAM Extract Object App
+# SAM Extract Object & Remove background App
 [Segment Anything Model(SAM)](https://github.com/facebookresearch/segment-anything) is the foundation model for the segmentation task by Meta.
 In this repository, an application that extract an object and remove the background by utilizing SAM's interactive segmentation with click is implemented. The UI is implemented using [gradio](https://gradio.app/).
 The Encoder part of SAM is served to the [triton inference server](https://github.com/triton-inference-server/server) to increase the efficiency of inference.
