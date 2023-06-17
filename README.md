@@ -17,7 +17,7 @@ All parts of the app were configured for deployment on docker and k8s.
 - Monitoring on K8s (Promtail + Loki & Prometheus & Grafana).
 
 ## Application Structure
-![app-structure](https://github.com/MrSyee/SAM-remove-background/assets/17582508/427c7168-c799-42d0-bf1c-f4b2b493a427)
+![app-structure](https://github.com/MrSyee/SAM-remove-background/assets/17582508/3f948193-cd94-4b54-a2c6-d9a16a4ce27e)
 
 SAM has three components: **an image encoder**, **a flexible prompt encoder**, and **a fast mask decoder**. The image embedding obtained by the image encoder, which is a large model, can be reused in the image decoder.
 
