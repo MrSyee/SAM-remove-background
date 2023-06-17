@@ -123,7 +123,7 @@ def extract_object(
     bgr_channel = result_image[..., :3]  # BGR 채널 분리
     alpha_channel = np.where(bgr_channel[..., 0] == 0, 0, 255).astype(
         np.uint8
-    )  # 투명도 채널 생성
+    )
     result_image = np.dstack((bgr_channel, alpha_channel))  # BGRA 이미지 생성
 
     return result_image
@@ -147,7 +147,16 @@ def get_coords(evt: gr.SelectData) -> Tuple[int, int]:
 ###################
 with gr.Blocks() as app:
     print("[INFO] Gradio app ready")
-    gr.Markdown("# Interactive Extracting Object from Image")
+    gr.Markdown(
+        """
+        # Interactive Extracting Object from Image
+
+        1. Upload an image.
+        2. Check that the image embedding has been created.
+        If you don't use GPU, this process is very slow.
+        3. Click where you want to extract from the image.
+        """
+    )
 
     gr.Markdown("## Image")
     with gr.Row():
@@ -158,12 +167,12 @@ with gr.Blocks() as app:
         input_img = gr.Image(label="Input image").style(height=600)
         output_img = gr.Image(label="Output image").style(height=600)
 
+    gr.Markdown("## Image Embedding file")
     with gr.Row():
-        embed_btn = gr.Button(value="Get image embedding")
-
+        with gr.Column(scale=1):
+            image_embedding_file = gr.File(label="image embedding file", type="file")
     gr.Markdown(
         """
-        ## Image Embedding file
         To inference model you should get image embedding that is generated
             by SAM encoder.
 
@@ -173,12 +182,8 @@ with gr.Blocks() as app:
             In this case, the image embedding file must be in npy format.
         """
     )
-    with gr.Row():
-        with gr.Column(scale=1):
-            image_embedding_file = gr.File(label="image embedding file", type="file")
-
     # Create image embedding when upload input image
-    embed_btn.click(
+    input_img.upload(
         get_image_embedding,
         inputs=input_img,
         outputs=image_embedding_file,
