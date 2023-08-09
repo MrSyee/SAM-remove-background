@@ -66,6 +66,28 @@ docker compose up -d
 ```
 Browse localhost:7860.
 
+### 3. k8s
+Install the prerequisites:
+- Install [Kubernetes CLI (kubectl)](https://kubernetes.io/docs/tasks/tools/).
+- Install [Helm](https://helm.sh/docs/intro/install/).
+
+Create cluster.
+```bash
+make cluster
+```
+
+Install helm charts.
+```bash
+make charts
+```
+
+Remove cluster.
+```bash
+make finalize
+```
+
+
+
 
 ## Model repository
 For this project, I used one of [the pre-trained SAM models](https://github.com/facebookresearch/segment-anything#model-checkpoints), the `sam_vit_h` model. The decoder was converted to onnx and the encoder was converted to torchscript for uploading to triton. Both models were uploaded to huggingface ([encoder](https://huggingface.co/khsyee/sam-vit-h-encoder-torchscript/tree/main) | [decoder](https://huggingface.co/khsyee/sam-vit-h-decoder-onnx-quantized)).
