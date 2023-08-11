@@ -29,6 +29,7 @@ docker-build-client:
 	docker build -t ${CONTAINER_NAME}-client -f Dockerfiles/client.Dockerfile .
 
 docker-push-client:
+	cat secrets/token.txt | docker login https://ghcr.io -u mrsyee --password-stdin
 	docker push ${CONTAINER_NAME}-client
 
 docker-pull-client:
@@ -70,5 +71,6 @@ finalize:
 
 charts:
 	kubectl apply -f secrets/triton.yaml
+	helm install client charts/client
 	helm install minio charts/minio
 	helm install triton charts/triton

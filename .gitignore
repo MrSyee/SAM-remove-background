@@ -3,6 +3,8 @@ __pycache__
 .mypy_cache
 .pytest_cache
 
+secrets/token.txt
+
 checkpoint
 logs
 outputs

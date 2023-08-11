@@ -78,6 +78,9 @@ make cluster
 
 Install helm charts.
 ```bash
+# Set secret for ghcr auth. Required github token `secrets/token.txt`.
+sh scripts/init.sh
+
 make charts
 ```
 
