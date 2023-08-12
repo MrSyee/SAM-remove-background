@@ -19,8 +19,8 @@ https://github.com/MrSyee/SAM-remove-background/assets/17582508/1ae9ffb8-47ea-40
 - [x] Convert pre-trained SAM Encoder to torchscript. ([Huggingface](https://huggingface.co/khsyee/sam-vit-h-encoder-torchscript/tree/main))
 - [x] Triton serving SAM Encoder.
 - [x] Kubernetes helm charts for the server and client.
-- [] Monitoring on K8s (Promtail + Loki & Prometheus & Grafana).
-- [] Load test on Triton server (Locust).
+- [ ] Monitoring on K8s (Promtail + Loki & Prometheus & Grafana).
+- [ ] Load test on Triton server (Locust).
 
 ## Application Structure
 ![app-structure](https://github.com/MrSyee/SAM-remove-background/assets/17582508/3f948193-cd94-4b54-a2c6-d9a16a4ce27e)
