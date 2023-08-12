@@ -1,21 +1,21 @@
-# Default values for client.
+# Default values for server.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-nameOverride: "sam-remove-background-client"
+nameOverride: "sam-remove-background-server"
 fullnameOverride: ""
 
 replicaCount: 1
 
 image:
-  repository: ghcr.io/mrsyee/sam-remove-background-client
+  repository: ghcr.io/mrsyee/sam-remove-background-server
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest  # TODO: Add a specific version after setting CI/CD.
 
 env:
-  - name: API_SERVER_URL
-    value: "sam-remove-background-server.default.svc.cluster.local:8888"
+  - name: INFERENCE_SERVER_URL
+    value: "triton-server.default.svc.cluster.local:8001"
 
 imagePullSecrets:
   - name: regcred
@@ -48,8 +48,8 @@ securityContext: {}
 
 service:
   type: LoadBalancer
-  port: 7860
-  targetPort: 7860
+  port: 8888
+  targetPort: 8888
 
 ingress:
   enabled: false

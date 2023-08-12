@@ -26,5 +26,5 @@
 # Reference: https://github.com/triton-inference-server/server/blob/main/deploy/aws/Chart.yaml
 
 apiVersion: v2
-name: triton
+name: triton-server
 version: 0.1.0
