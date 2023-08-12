@@ -11,7 +11,7 @@ image:
   repository: ghcr.io/mrsyee/sam-remove-background-client
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: latest  # TODO: Add a specific version after setting CI/CD.
+  tag: v0.0.1  # TODO: Add a specific version after setting CI/CD.
 
 env:
   - name: API_SERVER_URL
