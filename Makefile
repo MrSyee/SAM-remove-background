@@ -73,6 +73,7 @@ finalize:
 
 charts:
 	kubectl apply -f secrets/triton.yaml
+	helm install prometheus charts/prometheus
 	helm install client charts/client
 	helm install server charts/server
 	helm install minio charts/minio
@@ -80,6 +81,7 @@ charts:
 
 remove-charts:
 	helm uninstall client
+	helm uninstall prometheus
 	helm uninstall server
 	helm uninstall minio
 	helm uninstall triton
