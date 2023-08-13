@@ -12,6 +12,7 @@ https://github.com/MrSyee/SAM-remove-background/assets/17582508/1ae9ffb8-47ea-40
 - python 3.9+
 - [docker](https://www.docker.com/)
 - GPU: Required for the speed of the image encoder
+- [k3s](https://k3s.io/): Lightweight Kubernetes
 
 ## Contents
 - [x] Implement remove background app using SAM with Gradio.
@@ -73,7 +74,7 @@ Install the prerequisites:
 - Install [Kubernetes CLI (kubectl)](https://kubernetes.io/docs/tasks/tools/).
 - Install [Helm](https://helm.sh/docs/intro/install/).
 
-Create cluster.
+Create k3s cluster.
 ```bash
 make cluster
 ```
