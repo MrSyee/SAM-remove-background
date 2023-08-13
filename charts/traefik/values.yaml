@@ -1,0 +1,18 @@
+traefik:
+  deployment:
+    replicas: 1
+  ports:
+    triton-http:
+      port: 18000
+      exposedPort: 8000
+      expose: true
+      protocol: TCP
+    triton-grpc:
+      port: 18001
+      exposedPort: 8001
+      expose: true
+      protocol: TCP
+    websecure:
+      expose: false
+    web:
+      expose: false

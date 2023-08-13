@@ -1,0 +1,7 @@
+apiVersion: v2
+name: traefik
+version: 1.0.0
+dependencies:
+  - name: traefik
+    repository: https://helm.traefik.io/traefik
+    version: 10.19.4

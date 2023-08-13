@@ -15,7 +15,7 @@ image:
 
 env:
   - name: INFERENCE_SERVER_URL
-    value: "triton-server.default.svc.cluster.local:8001"
+    value: "traefik.default.svc.cluster.local:8001"
 
 imagePullSecrets:
   - name: regcred

@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2023, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2019-2021, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -24,52 +24,29 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-tags:
-  autoscaling: true
-  loadBalancing: true
+# Creates the horizontal pod autoscaler for the Triton pod deployment.
+# In order to use custom metrics (ie metrics other than CPU usage) with this
+# autoscaler, you must have enabled installation of the prometheus adapter.
+# This autoscaler (and the prometheus adapter) will only be installed in the
+# autoscaling tag is set to true.
 
-replicaCount: 1
-
-image:
-  imageName: nvcr.io/nvidia/tritonserver:23.04-py3
-  pullPolicy: IfNotPresent
-  numGpus: 1
-  modelRepositoryPath: s3://minio:9000/model-repository
-  modelControlMode: poll # [none | explicit | poll]
-
-service:
-  type: LoadBalancer
-
-deployment:
-  apiVersion: apps/v1
-  kind: Deployment
-
-prometheus-adapter:
-  prometheus:
-    url: http://prometheus-operated.default.svc
-    port: 9090
-  rules:
-    custom:
-      - seriesQuery: 'nv_inference_queue_duration_us{namespace="default",pod!=""}'
-        resources:
-          overrides:
-            namespace:
-              resource: "namespace"
-            pod:
-              resource: "pod"
-        name:
-          matches: "nv_inference_queue_duration_us"
-          as: "avg_time_queue_us"
-        metricsQuery: 'avg(delta(nv_inference_queue_duration_us{<<.LabelMatchers>>}[30s])/(1+delta(nv_inference_request_success{<<.LabelMatchers>>}[30s]))) by (<<.GroupBy>>)'
-
-autoscaling:
-  minReplicas: 1
-  maxReplicas: 2
-  metrics:
-    - type: Pods
-      pods:
-        metric:
-          name: avg_time_queue_us
-        target:
-          type: AverageValue
-          averageValue: 5000  # 1,000 us == 1 ms
+{{- if .Values.tags.autoscaling }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: triton-hpa
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "triton-inference-server.name" . }}
+    chart: {{ template "triton-inference-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: {{ .Values.deployment.apiVersion }}
+    kind: {{ .Values.deployment.kind }}
+    name: {{ template "triton-inference-server.fullname" . }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics: {{ toYaml .Values.autoscaling.metrics | nindent 2}}
+{{- end -}}

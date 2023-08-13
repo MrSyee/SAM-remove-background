@@ -24,10 +24,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-apiVersion: v1
-kind: Service
+# Creates the traefik IngressRoutes that allow for external access to the
+# triton service. Two routes are created, one for gRPC and one for HTTP.
+# Requires deployment of the traefik IngressRoute CRD, along with various roles
+# and permissions, most easily accomplished through the referenced traefik
+# helm chart. Will only be installed if the loadBalancing tag is set to true.
+
+{{- if .Values.tags.loadBalancing }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
-  name: {{ template "triton-inference-server.fullname" . }}
+  name: {{ template "triton-inference-server-ingressroute-http.name" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "triton-inference-server.name" . }}
@@ -35,57 +42,28 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - port: 8000
-      targetPort: http
-      name: http-inference-server
-    - port: 8001
-      targetPort: grpc
-      name: grpc-inference-server
-    - port: 8002
-      targetPort: metrics
-      name: metrics-inference-server
-  selector:
-    app: {{ template "triton-inference-server.name" . }}
-    release: {{ .Release.Name }}
+  entryPoints:
+    - triton-http
+  routes:
+    - match: PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: {{ template "triton-inference-server.fullname" . }}
+          port: 8000
 ---
-apiVersion: v1
-kind: Service
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
-  name: {{ template "triton-inference-server-metrics.fullname" . }}
+  name: {{ template "triton-inference-server-ingressroute-grpc.name" . }}
   namespace: {{ .Release.Namespace }}
-  labels:
-    app: {{ template "triton-inference-server-metrics.name" . }}
-    chart: {{ template "triton-inference-server.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-  annotations:
-    alpha.monitoring.coreos.com/non-namespaced: "true"
 spec:
-  ports:
-  - name: metrics
-    port: 8080
-    targetPort: metrics
-    protocol: TCP
-  selector:
-    app: {{ template "triton-inference-server.name" . }}
-    release: {{ .Release.Name }}
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: {{ template "triton-inference-server-metrics-monitor.fullname" . }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: {{ template "triton-inference-server-metrics-monitor.name" . }}
-    chart: {{ template "triton-inference-server.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  selector:
-    matchLabels:
-      app: {{ template "triton-inference-server-metrics.name" . }}
-  endpoints:
-  - port: metrics
-    interval: 15s
+  entryPoints:
+    - triton-grpc
+  routes:
+    - match: PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: {{ template "triton-inference-server.fullname" . }}
+          port: 8001
+          scheme: h2c
+{{- end -}}

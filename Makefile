@@ -73,19 +73,21 @@ finalize:
 
 charts:
 	kubectl apply -f secrets/triton.yaml
+	helm install traefik charts/traefik
 	helm install minio charts/minio
 	helm install loki charts/loki
 	helm install promtail charts/promtail
 	helm install prometheus charts/prometheus
-	helm install client charts/client
-	helm install server charts/server
 	helm install triton charts/triton
+	helm install sam-remove-background-server charts/server
+	helm install sam-remove-background-client charts/client
 
 remove-charts:
-	helm uninstall minio
-	helm uninstall loki
-	helm uninstall promtail
-	helm uninstall prometheus
-	helm uninstall client
-	helm uninstall server
+	helm uninstall sam-remove-background-client
+	helm uninstall sam-remove-background-server
 	helm uninstall triton
+	helm uninstall prometheus
+	helm uninstall promtail
+	helm uninstall loki
+	helm uninstall minio
+	helm uninstall traefik

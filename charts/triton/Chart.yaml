@@ -26,5 +26,12 @@
 # Reference: https://github.com/triton-inference-server/server/blob/main/deploy/aws/Chart.yaml
 
 apiVersion: v2
-name: triton-server
+name: triton
 version: 1.0.0
+dependencies:
+  # Ref: https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-adapter/values.yaml
+  - name: prometheus-adapter
+    repository: https://prometheus-community.github.io/helm-charts
+    version: 4.3.1
+    tags:
+      - autoscaling

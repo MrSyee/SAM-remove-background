@@ -15,7 +15,7 @@ image:
 
 env:
   - name: API_SERVER_URL
-    value: "sam-remove-background-server.default.svc.cluster.local:8888"
+    value: "http://sam-remove-background-server.default.svc.cluster.local:8888"
 
 imagePullSecrets:
   - name: regcred
