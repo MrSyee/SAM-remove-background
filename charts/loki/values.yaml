@@ -1,0 +1,32 @@
+read:
+  replicas: 1
+write:
+  replicas: 1
+
+loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: "filesystem"
+
+  # NOTE: To maintain log files, pvc is used.
+  persistence:
+    enabled: true
+    accessModes:
+    - ReadWriteOnce
+    size: 10Gi
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: loki
+    existingClaim: grafana-loki
+    storageClassName: local-path
+
+pvc:
+  # use `standard` for storageClassName in minikube k8s
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi

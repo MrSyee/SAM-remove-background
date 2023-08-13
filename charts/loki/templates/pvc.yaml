@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-loki
+  labels:
+    {{- include "grafana-loki.labels" . | nindent 4 }}
+{{- with .Values.pvc }}
+spec:
+{{- toYaml . | nindent 4 }}
+{{- end }}

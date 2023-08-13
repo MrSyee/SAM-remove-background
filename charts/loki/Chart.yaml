@@ -1,0 +1,9 @@
+# Reference: https://github.com/grafana/loki/tree/main/production/helm/loki
+
+apiVersion: v2
+name: grafana-loki
+version: 1.0.0
+dependencies:
+    - name: loki
+      version: 2.16.0
+      repository: https://grafana.github.io/helm-charts
