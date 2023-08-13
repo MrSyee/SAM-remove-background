@@ -23,6 +23,7 @@ https://github.com/MrSyee/SAM-remove-background/assets/17582508/1ae9ffb8-47ea-40
 - [x] Monitoring on K8s (Promtail + Loki & Prometheus & Grafana).
 
 ## Application Structure
+### Components of SAM
 ![app-structure](https://github.com/MrSyee/SAM-remove-background/assets/17582508/97ac20d0-a083-499b-bdde-5a3e8b5c662a)
 
 SAM has three components: **an image encoder**, **a flexible prompt encoder**, and **a fast mask decoder**. The image embedding obtained by the image encoder, which is a large model, can be reused in the image decoder.
@@ -30,6 +31,7 @@ SAM has three components: **an image encoder**, **a flexible prompt encoder**, a
 The structure of the application reflects the structure of SAM. The **image encoder** works on the **server part**. It uses GPU resources to make inferences. The image encoder is only performed when a new image is uploaded.
 The relatively lightweight **mask decoder** and **prompt encoder** work on the **client part**. They take the image embedding obtained by the image encoder as input.
 
+### With k8s cluster
 ![k8s-structure](https://github.com/MrSyee/SAM-remove-background/assets/17582508/53813067-867a-4f3d-993a-61f90024e73b)
 When using the k8s cluster, set up a dashboard for monitoring log and metric with Grafana, Prometheus, and Loki.
 
@@ -113,9 +115,6 @@ Remove cluster.
 ```bash
 make finalize
 ```
-
-
-
 
 ## Model repository
 For this project, I used one of [the pre-trained SAM models](https://github.com/facebookresearch/segment-anything#model-checkpoints), the `sam_vit_h` model. The decoder was converted to onnx and the encoder was converted to torchscript for uploading to triton. Both models were uploaded to huggingface ([encoder](https://huggingface.co/khsyee/sam-vit-h-encoder-torchscript/tree/main) | [decoder](https://huggingface.co/khsyee/sam-vit-h-decoder-onnx-quantized)).
