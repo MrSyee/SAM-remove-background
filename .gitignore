@@ -9,3 +9,5 @@ checkpoint
 logs
 outputs
 model_repository
+
+jupyternotebook/examples
