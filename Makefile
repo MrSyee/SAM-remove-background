@@ -1,27 +1,26 @@
-PYTHON=3.9
 BASENAME=sam-remove-background
 CONTAINER_NAME=ghcr.io/mrsyee/${BASENAME}
 
 # Prerequisites for local execution
-env:
-	conda create -n $(BASENAME)  python=$(PYTHON) -y
-
 setup:
-	pip install -r requirements.txt
+	uv sync --frozen --all-extras --all-groups
 
 model:
 	sh scripts/download_decoder_model.sh
 	sh scripts/download_encoder_model.sh
 
 # Run
+triton:
+	docker compose up triton-server
+
 client:
-	python src/client/app.py
+	uv run --no-sync python src/client/app.py
 
 server:
-	PYTHONPATH=src/server uvicorn src.server.main:app --host 0.0.0.0 --port 8888
+	PYTHONPATH=src/server uv run --no-sync uvicorn src.server.main:app --host 0.0.0.0 --port 8888
 
 server-debug:
-	PYTHONPATH=src/server uvicorn src.server.main:app --host 0.0.0.0 --port 8888 --reload --reload-exclude "src/client/*"
+	PYTHONPATH=src/server uv run --no-sync uvicorn src.server.main:app --host 0.0.0.0 --port 8888 --reload --reload-exclude "src/client/*"
 
 # Docker
 # Client
@@ -43,14 +42,14 @@ docker-push-server:
 
 # Dev
 setup-dev:
-	pip install -r requirements-dev.txt
+	uv sync --frozen --all-extras --all-groups
 
 format:
-	black .
-	isort .
+	uv run --no-sync black .
+	uv run --no-sync isort .
 
 lint:
-	PYTHONPATH=src pytest src --flake8 --pylint --mypy
+	PYTHONPATH=src uv run --no-sync pytest src --flake8 --pylint --mypy
 
 
 # k8s

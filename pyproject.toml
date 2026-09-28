@@ -1,0 +1,62 @@
+[project]
+name = "sam-remove-background"
+version = "0.1.0"
+description = "Interactive object extraction and background removal using SAM"
+readme = "README.md"
+requires-python = ">=3.9,<3.10"
+dependencies = [
+    "numpy<2",
+    "setuptools<81",
+]
+
+[project.optional-dependencies]
+client = [
+    "gradio==3.32.0",
+    "gradio-client==0.2.9",
+    "httpx==0.24.1",
+    "onnxruntime==1.14.1",
+    "opencv-python==4.7.0.72",
+]
+server = [
+    "fastapi==0.95.1",
+    "opencv-python==4.7.0.72",
+    "pycocotools==2.0.6",
+    "python-multipart==0.0.6",
+    "torch==2.0.0",
+    "torchvision==0.15.1",
+    "tritonclient[grpc,http]==2.33.0",
+    "uvicorn[standard]==0.22.0",
+]
+notebook = [
+    "gradio==3.32.0",
+    "gradio-client==0.2.9",
+    "opencv-python==4.7.0.72",
+    "pycocotools==2.0.6",
+    "segment-anything @ https://github.com/facebookresearch/segment-anything/archive/dca509fe793f601edb92606367a655c15ac00fdf.tar.gz",
+    "torch==2.0.0",
+    "torchvision==0.15.1",
+]
+
+[dependency-groups]
+dev = [
+    "black==22.3.0",
+    "flake8==3.8.4",
+    "flake8-annotations==2.7.0",
+    "flake8-bugbear==22.1.11",
+    "flake8-builtins==1.5.3",
+    "flake8-docstrings==1.6.0",
+    "isort==5.10.1",
+    "line-profiler==4.0.3",
+    "locust==2.15.1",
+    "mypy==0.931",
+    "pylint==2.12.2",
+    "pytest==6.2.5",
+    "pytest-cov==3.0.0",
+    "pytest-flake8==1.0.7",
+    "pytest-mypy==0.8.0",
+    "pytest-pylint==0.18.0",
+    "requests==2.29.0",
+]
+
+[tool.uv]
+package = false

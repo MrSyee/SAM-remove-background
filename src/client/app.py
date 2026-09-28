@@ -41,6 +41,9 @@ ort_sess = ort.InferenceSession(CHECKPOINT_PATH, sess_options)
 async def get_image_embedding(image: np.ndarray) -> str:
     """Get image embedding using API."""
     print("[INFO] Get image embedding.")
+    if image is None:
+        raise gr.Error("Please upload an image first.")
+
     # Resize the image while maintaining the aspect ratio
     origin_shape = image.shape[:2]
     height, width = get_preprocess_shape(*origin_shape, IMAGE_SIZE_FOR_EMBEDDING)
@@ -57,13 +60,13 @@ async def get_image_embedding(image: np.ndarray) -> str:
             response = await client.post(
                 f"{API_SERVER_URL}/image-embedding", files=files
             )
-        if response.status_code == 200:
-            resp = response.json()
-        else:
-            print("[Error] status_code is not 200: ", response.status_code)
-
-    except Exception as e:
-        logger.exception(e)
+        response.raise_for_status()
+        resp = response.json()
+    except (httpx.HTTPError, ValueError) as error:
+        logger.exception("Failed to get image embedding")
+        raise gr.Error(
+            "Failed to get image embedding. Check the API server and Triton server."
+        ) from error
 
     # Decode
     image_embedding = base64.b64decode(resp["image_embedding"])
@@ -84,8 +87,14 @@ def extract_object(
     point_h: int,
 ) -> np.ndarray:
     """Extract object and remove background to inference model."""
+    if image is None:
+        raise gr.Error("Please upload an image first.")
+    if embedding_file is None:
+        raise gr.Error("Wait until the image embedding has been created.")
+
     # Load embedding
-    image_embedding = np.load(embedding_file.name)
+    embedding_path = getattr(embedding_file, "name", embedding_file)
+    image_embedding = np.load(embedding_path)
     image_embedding = image_embedding.reshape(1, 256, 64, 64)
 
     # Resize the image to prevent too large image

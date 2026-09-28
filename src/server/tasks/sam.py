@@ -9,8 +9,6 @@ import torch
 import tritonclient.grpc.aio as grpcclient
 from fastapi import UploadFile
 from pydantic import BaseModel, Field
-from segment_anything import sam_model_registry
-
 from utils.logger import get_logger
 
 EmbeddingShape = Tuple[int, int, int, int]

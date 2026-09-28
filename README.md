@@ -9,7 +9,7 @@ Demo video([Youtube](https://youtu.be/R3BP1GmKroA)):
 https://github.com/MrSyee/SAM-remove-background/assets/17582508/1ae9ffb8-47ea-4025-afa5-e158ab209665
 
 ## Prerequisite
-- python 3.9+
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - [docker](https://www.docker.com/)
 - GPU: Required for the speed of the image encoder
 - [k3s](https://k3s.io/): Lightweight Kubernetes
@@ -36,16 +36,23 @@ The relatively lightweight **mask decoder** and **prompt encoder** work on the *
 When using the k8s cluster, set up a dashboard for monitoring log and metric with Grafana, Prometheus, and Loki.
 
 ## Run
-### 1. In local with conda
-Initialize conda environment.
+### 1. Run locally with uv
+Create the Python 3.9 virtual environment and install all dependencies.
 ```bash
-make env
-conda activate sam-remove-background
 make setup
 ```
+
+`uv` creates and manages the `.venv` automatically. You do not need to activate it.
+
 Download models.
 ```bash
 make model
+```
+
+Run Triton for the SAM encoder in a separate terminal.
+This requires Linux, an NVIDIA GPU, and NVIDIA Container Toolkit.
+```bash
+make triton
 ```
 
 Run API Server for SAM encoder.

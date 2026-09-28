@@ -3,7 +3,7 @@ import os
 import cv2
 import tritonclient.grpc.aio as grpcclient
 import uvicorn
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, HTTPException, UploadFile
 
 from tasks.sam import SAMImageEmbeddingResponse, SAMImageEncoder
 from utils.logger import get_logger
@@ -43,8 +43,15 @@ async def create_image_embedding(file: UploadFile) -> SAMImageEmbeddingResponse:
         }
         out = await sam_image_encoder.run(file, inference_params)
 
-    except Exception as e:
-        logger.exception(e)
+    except Exception as error:
+        logger.exception("Triton inference failed")
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                "Triton inference failed. Check that the Triton server is running "
+                f"at {inference_server_url}."
+            ),
+        ) from error
 
     return SAMImageEmbeddingResponse(**out)
 
